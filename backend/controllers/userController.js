@@ -5,6 +5,11 @@ import jwt from 'jsonwebtoken'
 import {v2 as cloudinary} from 'cloudinary'
 import doctorModel from '../models/doctorModel.js'
 import appointmentModel from '../models/appointmentModel.js'
+import Stripe from 'stripe';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 // API to register users
 const registerUser = async(req,res) => {
     try {
@@ -174,4 +179,50 @@ const listAppointment = async (req,res) => {
 }
 
 //API to cancel an appointment
-export {registerUser, loginUser, getProfile, updateProfile, bookAppointment, listAppointment}
+const cancelAppointment = async (req,res) => {
+    try {
+        const {userId, appointmentId} = req.body;
+
+        const appointmentData = await appointmentModel.findById(appointmentId)
+
+        // verify appointment user
+        if(appointmentData.userId != userId) {
+            return res.json({succes: false, message: "Unauthorized action"})
+        }
+
+        await appointmentModel.findByIdAndUpdate(appointmentId, {cancelled: true})
+
+        //Releasing doctors slot
+        const {docId, slotDate, slotTime} = appointmentData
+        const doctorData = await doctorModel.findById(docId)
+
+        let slots_booked = doctorData.slots_booked
+
+        slots_booked[slotDate] = slots_booked[slotDate].filter(e => e!== slotTime)
+
+        await doctorModel.findByIdAndUpdate(docId, {slots_booked})
+        res.json({success: true, message: "Appointment Cancelled"})
+    } catch (error) {
+        console.log(error);
+        res.json({success: false, message: error.message})
+    }
+}
+
+const stripe = Stripe(process.env.STRIPE_SECRET);
+//API to make payment using Stripe
+const paymentStripe = async(req,res) => {
+    const { amount, currency } = req.body;
+
+    try {
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount, // Amount in the smallest currency unit (e.g., cents for USD)
+            currency, // 'usd', 'inr', etc.
+            payment_method_types: ['card'], // You can add more methods
+        });
+
+        res.json({success: true, clientSecret: paymentIntent.client_secret });
+    } catch (error) {
+        res.json({success: false, message: "Payment Failed" });
+    }
+}
+export {registerUser, loginUser, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment, paymentStripe}
