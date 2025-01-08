@@ -210,19 +210,28 @@ const cancelAppointment = async (req,res) => {
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
 //API to make payment using Stripe
-const paymentStripe = async(req,res) => {
-    const { amount, currency } = req.body;
+const paymentStripe = async (req, res) => {
+    const { amount, currency, appointmentId } = req.body;
 
     try {
         const paymentIntent = await stripe.paymentIntents.create({
             amount, // Amount in the smallest currency unit (e.g., cents for USD)
             currency, // 'usd', 'inr', etc.
-            payment_method_types: ['card'], // You can add more methods
+            payment_method_types: ['card'],
         });
 
-        res.json({success: true, clientSecret: paymentIntent.client_secret });
+        // Update the appointment record to mark payment as successful
+        await appointmentModel.findByIdAndUpdate(
+            appointmentId,
+            { payment: true, amount: amount / 100 }, // Update payment and store the paid amount
+            { new: true }
+        );
+
+        res.json({ success: true, clientSecret: paymentIntent.client_secret });
     } catch (error) {
-        res.json({success: false, message: "Payment Failed" });
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Payment Failed' });
     }
-}
+};
+
 export {registerUser, loginUser, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment, paymentStripe}

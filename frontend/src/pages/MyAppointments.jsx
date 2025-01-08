@@ -6,7 +6,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import PaymentForm from './PaymentForm';
 
-const stripePromise = loadStripe('dummy key');
+const stripePromise = loadStripe('Dummy Data');
 
 const MyAppointments = () => {
   const { backendUrl, token, getDoctorsData } = useContext(AppContext);
@@ -48,7 +48,7 @@ const MyAppointments = () => {
   const closePaymentModal = () => {
     setSelectedAppointment(null);
     getUserAppointments(); // Refresh appointments after payment
-  };
+};
 
   useEffect(() => {
     if (token) {
@@ -80,28 +80,39 @@ const MyAppointments = () => {
               </p>
             </div>
             <div className="flex flex-col gap-3 mt-4 md:mt-0">
-              {!item.cancelled && (
+    {item.payment ? (
+        <>
+            <button className="sm:min-w-48 py-2 border border-green-500 rounded text-green-500">
+                Paid: ${item.amount}
+            </button>
+        </>
+    ) : (
+        <>
+            {!item.cancelled && (
                 <button
-                  onClick={() => handlePaymentClick(item)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
+                    onClick={() => handlePaymentClick(item)}
+                    className="px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
                 >
-                  Pay Online
+                    Pay Online
                 </button>
-              )}
-              {!item.cancelled && (
+            )}
+            {!item.cancelled && (
                 <button
-                  onClick={() => cancelAppointment(item._id)}
-                  className="px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600"
+                    onClick={() => cancelAppointment(item._id)}
+                    className="px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600"
                 >
-                  Cancel Appointment
+                    Cancel Appointment
                 </button>
-              )}
-              {item.cancelled && (
-                <button className="sm:min-w-48 py-2 border border-red-500 rounded text-red-500">
-                  Appointment Cancelled
-                </button>
-              )}
-            </div>
+            )}
+        </>
+    )}
+    {item.cancelled && (
+        <button className="sm:min-w-48 py-2 border border-red-500 rounded text-red-500">
+            Appointment Cancelled
+        </button>
+    )}
+</div>
+
           </div>
         ))}
       </div>

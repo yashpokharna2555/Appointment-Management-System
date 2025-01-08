@@ -19,9 +19,13 @@ const PaymentForm = ({ appointment, backendUrl, token, onSuccess }) => {
       // Step 1: Create payment intent
       const { data } = await axios.post(
         `${backendUrl}/api/user/create-payment-intent`,
-        { amount: appointment.docData.fees * 100, currency: 'usd' },
+        { 
+            amount: appointment.amount * 100, // Use the amount from the schema
+            currency: 'usd',
+            appointmentId: appointment._id // Pass the appointment ID
+        },
         { headers: { token } }
-      );
+    );
 
       if (data.success) {
         const clientSecret = data.clientSecret;
