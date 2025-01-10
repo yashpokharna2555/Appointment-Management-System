@@ -6,6 +6,8 @@ import { assets } from '../../assets/assets_admin/assets.js'
 
 const Dashboard = () => {
   const { aToken, getDashData, cancelAppointment, dashData } = useContext(AdminContext)
+  console.log(dashData.latestAppointments);
+  
 
 
   useEffect(() => {
@@ -55,7 +57,8 @@ const Dashboard = () => {
         <div className='pt-4 border border-t-0'>
           {
             dashData.latestAppointments.map((item, index) => {
-              <div className='flex items-center px-6 py-3 gap-3 hover:bg-gray-100' key={index}>
+              return (
+                <div className='flex items-center px-6 py-3 gap-3 hover:bg-gray-100' key={index}>
                 <img className='rounded-full w-10' src={item.docData.image} alt="" />
                 <div className='flex-1 text-sm'>
                   <p className='text-gray-800 font-medium'>{item.docData.name}</p>
@@ -72,6 +75,7 @@ const Dashboard = () => {
                   </button>
                 }
               </div>
+              )
             })
           }
         </div>
