@@ -10,8 +10,12 @@ const AppContextProvider = (props) => {
         let age = today.getFullYear() - birthDate.getFullYear()
         return age
     }
+    const slotDateFormat = (slotDate) => {
+
+    }
     const value = {
-        calculateAge
+        calculateAge,
+        slotDateFormat
     }
 
     return (
