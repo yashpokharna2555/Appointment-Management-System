@@ -6,7 +6,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import PaymentForm from './PaymentForm';
 
-const stripePromise = loadStripe('dummy');
+const stripePromise = loadStripe('Dummy Key');
 
 const MyAppointments = () => {
   const { backendUrl, token, getDoctorsData } = useContext(AppContext);
@@ -88,7 +88,7 @@ const MyAppointments = () => {
         </>
     ) : (
         <>
-            {!item.cancelled && (
+            {!item.cancelled && !item.cancelled && (
                 <button
                     onClick={() => handlePaymentClick(item)}
                     className="px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
@@ -96,7 +96,7 @@ const MyAppointments = () => {
                     Pay Online
                 </button>
             )}
-            {!item.cancelled && (
+            {!item.cancelled && !item.cancelled && (
                 <button
                     onClick={() => cancelAppointment(item._id)}
                     className="px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600"
@@ -106,7 +106,7 @@ const MyAppointments = () => {
             )}
         </>
     )}
-    {item.cancelled && (
+    {item.cancelled && !item.cancelled && (
         <button className="sm:min-w-48 py-2 border border-red-500 rounded text-red-500">
             Appointment Cancelled
         </button>

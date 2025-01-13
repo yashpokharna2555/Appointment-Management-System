@@ -7,40 +7,43 @@ import { toast } from 'react-toastify';
 import { DoctorContext } from '../context/DoctorContext';
 const Login = () => {
   const [state, setState] = useState('Admin');
-  const {setAToken, backendUrl} = useContext(AdminContext)
-  const [email,setEmail] = useState('')
-  const [password,setPassword] = useState('')
+  const { setAToken, backendUrl } = useContext(AdminContext)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
-  const {setDToken} = useContext(DoctorContext)
+  const { setDToken } = useContext(DoctorContext)
 
-  const onSubmitHandler = async (e) =>{
+  const onSubmitHandler = async (e) => {
     e.preventDefault()
 
     try {
-        if(state === 'Admin') {
-            const {data} = await axios.post(backendUrl+'/api/admin/login',{email,password})
-            if(data.success){
-                console.log(data.token);
-                localStorage.setItem('aToken',data.token)
-                setAToken(data.token)
-                
-            } else {
-                toast.error(data.message)
-            }
+      if (state === 'Admin') {
+        const { data } = await axios.post(backendUrl + '/api/admin/login', { email, password })
+        if (data.success) {
+          console.log(data.token);
+          localStorage.setItem('aToken', data.token)
+          setAToken(data.token)
+
         } else {
-          const {data} = await axios.post(backendUrl+'/api/doctor/login', {email, password})
-          if(data.success){
+          toast.error(data.message)
+        }
+      } else {
+        try {
+          const { data } = await axios.post(backendUrl + '/api/doctor/login', { email, password });
+          if (data.success) {
             console.log(data.token);
-            localStorage.setItem('dToken',data.token)
-            setDToken(data.token)
-            
-            
-        } else {
-            toast.error(data.message)
+            localStorage.setItem('dToken', data.token); // Save token in local storage
+            setDToken(data.token); // Update state
+          } else {
+            toast.error(data.message);
+          }
+        } catch (error) {
+          console.log(error);
+          toast.error(error.message);
         }
-        }
+      }
     } catch (error) {
-        
+
     }
   }
 
@@ -55,7 +58,7 @@ const Login = () => {
             Email
           </label>
           <input
-            onChange={(e)=>setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             value={email}
             type="email"
             id="email"
@@ -69,7 +72,7 @@ const Login = () => {
           </label>
           <input
             type="password"
-            onChange={(e)=>setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             value={password}
             id="password"
             required
@@ -83,9 +86,9 @@ const Login = () => {
           Login
         </button>
         {
-            state === 'Admin'
-            ? <p>Doctor Login? <span className='text-primary underline cursor-pointer' onClick={()=> setState('Doctor')}>Click here</span></p>
-            : <p>Admin Login? <span className='text-primary underline cursor-pointer' onClick={()=> setState('Admin')}>Click here</span></p>
+          state === 'Admin'
+            ? <p>Doctor Login? <span className='text-primary underline cursor-pointer' onClick={() => setState('Doctor')}>Click here</span></p>
+            : <p>Admin Login? <span className='text-primary underline cursor-pointer' onClick={() => setState('Admin')}>Click here</span></p>
         }
       </div>
     </form>

@@ -7,7 +7,7 @@ import { assets } from '../../assets/assets_admin/assets.js'
 const Dashboard = () => {
   const { aToken, getDashData, cancelAppointment, dashData } = useContext(AdminContext)
   console.log(dashData.latestAppointments);
-  
+
 
 
   useEffect(() => {
@@ -59,22 +59,24 @@ const Dashboard = () => {
             dashData.latestAppointments.map((item, index) => {
               return (
                 <div className='flex items-center px-6 py-3 gap-3 hover:bg-gray-100' key={index}>
-                <img className='rounded-full w-10' src={item.docData.image} alt="" />
-                <div className='flex-1 text-sm'>
-                  <p className='text-gray-800 font-medium'>{item.docData.name}</p>
-                  <p className='text-gray-600'>{item.slotDate}</p>
+                  <img className='rounded-full w-10' src={item.docData.image} alt="" />
+                  <div className='flex-1 text-sm'>
+                    <p className='text-gray-800 font-medium'>{item.docData.name}</p>
+                    <p className='text-gray-600'>{item.slotDate}</p>
+                  </div>
+                  {appointment.cancelled
+                    ? <p className='text-red-400 text-xs font-medium'>Cancelled</p>
+                    : item.isCompleted
+                      ? <p className='text-green-500 text-xs font-medium'>Completed</p>
+                      : <button onClick={() => cancelAppointment(appointment._id)} title="Cancel Appointment">
+                        <img
+                          src={assets.cancel_icon}
+                          alt="Cancel"
+                          className="w-10 cursor-pointer"
+                        />
+                      </button>
+                  }
                 </div>
-                {item.cancelled
-                  ? <p className='text-red-400 text-xs font-medium'>Cancelled</p>
-                  : <button onClick={() => cancelAppointment(item._id)} title="Cancel Appointment">
-                    <img
-                      src={assets.cancel_icon}
-                      alt="Cancel"
-                      className="w-10 cursor-pointer"
-                    />
-                  </button>
-                }
-              </div>
               )
             })
           }

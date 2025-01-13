@@ -76,19 +76,21 @@ const AllAppointments = () => {
                       ) : (
                         <span className="px-2 py-1 bg-red-100 text-red-600 rounded-full mr-2">Unpaid</span>
                       )}
-                      
-                      
+
+
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-700">
-                    {appointment.cancelled
-                      ? <p className='text-red-400 text-xs font-medium'>Cancelled</p>
-                      : <button onClick={()=>cancelAppointment(appointment._id)} title="Cancel Appointment">
-                        <img 
-                          src={assets.cancel_icon}
-                          alt="Cancel"
-                          className="w-10 cursor-pointer"
-                        />
-                      </button>
+                      {appointment.cancelled
+                        ? <p className='text-red-400 text-xs font-medium'>Cancelled</p>
+                        : item.isCompleted
+                          ? <p className='text-green-500 text-xs font-medium'>Completed</p>
+                          : <button onClick={() => cancelAppointment(appointment._id)} title="Cancel Appointment">
+                            <img
+                              src={assets.cancel_icon}
+                              alt="Cancel"
+                              className="w-10 cursor-pointer"
+                            />
+                          </button>
                       }
                     </td>
                   </tr>
