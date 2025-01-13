@@ -82,7 +82,7 @@ const AllAppointments = () => {
                     <td className="px-4 py-3 text-sm text-gray-700">
                       {appointment.cancelled
                         ? <p className='text-red-400 text-xs font-medium'>Cancelled</p>
-                        : item.isCompleted
+                        : appointment.isCompleted
                           ? <p className='text-green-500 text-xs font-medium'>Completed</p>
                           : <button onClick={() => cancelAppointment(appointment._id)} title="Cancel Appointment">
                             <img

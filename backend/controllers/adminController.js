@@ -124,22 +124,34 @@ const appointmentCancel = async (req, res) => {
 //API to get dashboard data to admin panel
 const adminDashboard = async (req, res) => {
     try {
-        const doctors = await doctorModel.find({})
-        const users = await userModel.find({})
-        const appointments = await appointmentModel.find({})
+        // Fetch all required data in parallel for better performance
+        const [doctors, users, appointments] = await Promise.all([
+            doctorModel.find({}),
+            userModel.find({}),
+            appointmentModel.find({}),
+        ]);
 
+        // Calculate 10% of total earnings
+        const totalEarnings = appointments.reduce((total, item) => {
+            return item.isCompleted ? total + item.amount : total;
+        }, 0);
+        const earnings = totalEarnings * 0.1; // Calculate 10% of total earnings
+
+        // Prepare dashboard data
         const dashData = {
             doctors: doctors.length,
             appointments: appointments.length,
             patients: users.length,
-            latestAppointments: appointments.reverse().slice(0,5)
-        }
+            latestAppointments: appointments.slice(-5).reverse(), // Get last 5 appointments
+            earnings, // 10% of total earnings
+        };
 
-        res.json({success: true, dashData})
+        // Send response
+        res.json({ success: true, dashData });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message });
     }
-    catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message })
-    }
-}
+};
+
 export { addDoctor, loginAdmin, allDoctors, appointmentAdmin, appointmentCancel, adminDashboard }

@@ -124,7 +124,7 @@ const doctorDashboard = async(req,res) => {
                 earnings += item.amount;
             } 
         })
-
+        earnings = earnings * 0.9
         let patients = []
 
         appointments.map((item) => {

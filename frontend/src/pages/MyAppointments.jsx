@@ -6,10 +6,10 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import PaymentForm from './PaymentForm';
 
-const stripePromise = loadStripe('Dummy Key');
+const stripePromise = loadStripe('dummy');
 
 const MyAppointments = () => {
-  const { backendUrl, token, getDoctorsData } = useContext(AppContext);
+  const { backendUrl, token, getDoctorsData, slotDateFormatUser } = useContext(AppContext);
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
 
@@ -48,7 +48,7 @@ const MyAppointments = () => {
   const closePaymentModal = () => {
     setSelectedAppointment(null);
     getUserAppointments(); // Refresh appointments after payment
-};
+  };
 
   useEffect(() => {
     if (token) {
@@ -76,42 +76,43 @@ const MyAppointments = () => {
               <p className="text-xl font-bold text-gray-800">{item.docData.name}</p>
               <p className="text-sm text-gray-600">{item.docData.speciality}</p>
               <p className="mt-4 text-sm text-gray-700">
-                <span className="font-medium">Date and Time:</span> {item.slotDate} | {item.slotTime}
+                <span className="font-medium">Date and Time:</span> {slotDateFormatUser(item.slotDate)} | {item.slotTime}
               </p>
             </div>
             <div className="flex flex-col gap-3 mt-4 md:mt-0">
-    {item.payment ? (
-        <>
-            <button className="sm:min-w-48 py-2 border border-green-500 rounded text-green-500">
-                Paid: ${item.amount}
-            </button>
-        </>
-    ) : (
-        <>
-            {!item.cancelled && !item.cancelled && (
-                <button
-                    onClick={() => handlePaymentClick(item)}
-                    className="px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
-                >
-                    Pay Online
+              {item.payment ? (
+                <>
+                  <button className="sm:min-w-48 py-2 border border-green-500 rounded text-green-500">
+                    Paid: ${item.amount}
+                  </button>
+                </>
+              ) : (
+                <>
+                  {!item.cancelled && (
+                    <>
+                      <button
+                        onClick={() => handlePaymentClick(item)}
+                        className="px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
+                      >
+                        Pay Online
+                      </button>
+                      <button
+                        onClick={() => cancelAppointment(item._id)}
+                        className="px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600"
+                      >
+                        Cancel Appointment
+                      </button>
+                    </>
+                  )}
+                </>
+              )}
+              {item.cancelled && (
+                <button className="sm:min-w-48 py-2 border border-red-500 rounded text-red-500">
+                  Appointment Cancelled
                 </button>
-            )}
-            {!item.cancelled && !item.cancelled && (
-                <button
-                    onClick={() => cancelAppointment(item._id)}
-                    className="px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600"
-                >
-                    Cancel Appointment
-                </button>
-            )}
-        </>
-    )}
-    {item.cancelled && !item.cancelled && (
-        <button className="sm:min-w-48 py-2 border border-red-500 rounded text-red-500">
-            Appointment Cancelled
-        </button>
-    )}
-</div>
+              )}
+            </div>
+
 
           </div>
         ))}

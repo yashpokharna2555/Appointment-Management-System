@@ -28,7 +28,7 @@ const AppContextProvider = ({ children }) => {
         try {
             const { data } = await axios.get(backendUrl + '/api/user/get-profile', { headers: { token } });
             console.log(data);
-            
+
             if (data.success) {
                 setUserData(data.userData);
             } else {
@@ -40,8 +40,26 @@ const AppContextProvider = ({ children }) => {
         }
     };
 
+    const slotDateFormatUser = (date) => {
+        console.log(date);
+        const months = [
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+
+        const split = date.split('_');
+        const day = split[0];
+        const monthIndex = parseInt(split[1], 10) - 1; // Convert month to 0-based index
+        const year = split[2];
+
+        const formattedDate = `${day} ${months[monthIndex]} ${year}`;
+        return formattedDate;
+
+    };
+
+
     const value = {
-        doctors,getDoctorsData,
+        doctors, getDoctorsData,
         currencySymbol,
         token,
         setToken,
@@ -49,6 +67,7 @@ const AppContextProvider = ({ children }) => {
         userData,
         setUserData,
         loadUserProfileData,
+        slotDateFormatUser
     };
 
     useEffect(() => {
@@ -56,8 +75,8 @@ const AppContextProvider = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        
-        
+
+
         if (token) {
             loadUserProfileData();
         } else {
