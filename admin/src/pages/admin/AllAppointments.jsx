@@ -13,11 +13,7 @@ const AllAppointments = () => {
     }
   }, [aToken]);
 
-  // const handleCancel = (appointmentId) => {
-  //   if (window.confirm('Are you sure you want to cancel this appointment?')) {
-  //     cancelAppointment(appointmentId);
-  //   }
-  // };
+  
 
   return (
     <div className="w-full p-4 bg-gray-50 shadow-md rounded-lg">
