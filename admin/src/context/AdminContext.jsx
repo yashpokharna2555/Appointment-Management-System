@@ -11,6 +11,7 @@ const AdminContextProvider = (props) => {
     const [doctors, setDoctors] = useState([])
     const [appointments, setAppointments] = useState([])
     const [dashData, setDashData] = useState(false)
+    const [earningsChartData, setEarningsChartData] = useState(false)
     const getAllDoctors = async () => {
         try {
             const {data} = await axios.post(backendUrl + '/api/admin/all-doctors', {}, {headers: {aToken}})
@@ -81,6 +82,23 @@ const AdminContextProvider = (props) => {
             toast.error(data.message)
         }
     }
+    const getEarningsData = async () => {
+        try {
+            const {data} = await axios.get(backendUrl+'/api/admin/dashboard-chart', {headers: {aToken}});
+            if(data.success) {
+                setEarningsChartData(data.earningsChartData)
+                console.log(data.earningsChartData);
+                
+            } else {
+                toast.error("Not load the Chart data")
+            }
+            
+        } catch (error) {
+            toast.error("Not load the Chart data")
+        }
+        
+      };
+      
     const value = {
         aToken,setAToken,
         backendUrl,
@@ -91,7 +109,9 @@ const AdminContextProvider = (props) => {
         setAppointments,
         getAllAppointments,
         cancelAppointment,
-        dashData,getDashData
+        dashData,getDashData,
+        getEarningsData,
+        earningsChartData,setEarningsChartData
     }
     
     

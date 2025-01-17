@@ -154,4 +154,34 @@ const adminDashboard = async (req, res) => {
     }
 };
 
-export { addDoctor, loginAdmin, allDoctors, appointmentAdmin, appointmentCancel, adminDashboard }
+const adminDashboardChart = async (req,res) => {
+    try {
+        const {appointments} = await appointmentModel.find({})
+        const {doctors} = await doctorModel.find({})
+
+        const earningsByDoctor = {};
+        appointments.forEach((appointment) => {
+            const doctorId = appointment.doctorId.toString()
+            const adminShare = appointment.amount * 0.1;
+
+            if(earningsByDoctor[doctorId]){
+                earningsByDoctor[doctorId] += adminShare
+            } else {
+                earningsByDoctor[doctorId] = adminShare
+            }
+        });
+
+        const earningsChartData = doctors.map((doctor) => ({
+            doctorName: `${doctor.firstName} ${doctor.lastName}`, // Assuming firstName and lastName exist in the doctor schema
+            earnings: earningsByDoctor[doctor._id.toString()] || 0, // Default to 0 if no earnings
+        }));
+
+        res.json({ success: true, earningsChartData });
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+
+export { addDoctor, loginAdmin, allDoctors, appointmentAdmin, appointmentCancel, adminDashboard, adminDashboardChart }
