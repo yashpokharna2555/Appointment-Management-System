@@ -154,34 +154,34 @@ const adminDashboard = async (req, res) => {
     }
 };
 
-const adminDashboardChart = async (req,res) => {
+const adminDashboardChart = async (req, res) => {
     try {
-        const {appointments} = await appointmentModel.find({})
-        const {doctors} = await doctorModel.find({})
+        const [doctors, appointments] = await Promise.all([
+            doctorModel.find({}),
+            appointmentModel.find({}),
+        ]);
 
         const earningsByDoctor = {};
         appointments.forEach((appointment) => {
-            const doctorId = appointment.doctorId.toString()
-            const adminShare = appointment.amount * 0.1;
+            // Ensure doctorId exists and is valid
+            const doctorId = appointment.doctorId ? appointment.doctorId.toString() : null;
+            if (!doctorId) return; // Skip if doctorId is missing or invalid
 
-            if(earningsByDoctor[doctorId]){
-                earningsByDoctor[doctorId] += adminShare
-            } else {
-                earningsByDoctor[doctorId] = adminShare
-            }
+            const adminShare = appointment.amount ? appointment.amount * 0.1 : 0; // Handle missing amount gracefully
+            earningsByDoctor[doctorId] = (earningsByDoctor[doctorId] || 0) + adminShare;
         });
 
         const earningsChartData = doctors.map((doctor) => ({
-            doctorName: `${doctor.firstName} ${doctor.lastName}`, // Assuming firstName and lastName exist in the doctor schema
+            doctorName: `${doctor.name || "Unknown Doctor"}`, // Fall back to "Unknown Doctor" if name is missing
             earnings: earningsByDoctor[doctor._id.toString()] || 0, // Default to 0 if no earnings
         }));
 
         res.json({ success: true, earningsChartData });
-        
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: error.message });
     }
-}
+};
+
 
 export { addDoctor, loginAdmin, allDoctors, appointmentAdmin, appointmentCancel, adminDashboard, adminDashboardChart }
