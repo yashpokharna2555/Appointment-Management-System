@@ -64,6 +64,21 @@ const AdminContextProvider = (props) => {
     }
   };
 
+  const getAllAppointments = async() => {
+    try {
+      const { data } = await axios.get(backendUrl + '/api/admin/appointments')
+      console.log("Get All Appointments", data);
+      
+      if(data.success) {
+        setAppointments(data.appointments)
+      } else {
+        toast.error("Failed to load earnings data");
+      }
+    } catch (error) {
+      toast.error("Failed to load earnings data");
+    }
+  }
+
   const cancelAppointment = async (appointmentId) => {
     try {
       const { data } = await axios.post(
@@ -92,6 +107,7 @@ const AdminContextProvider = (props) => {
     setAppointments,
     getDashData,
     cancelAppointment,
+    getAllAppointments,
     getEarningsData,
     dashData,
     earningsChartData,

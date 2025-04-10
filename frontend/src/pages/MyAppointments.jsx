@@ -6,7 +6,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import PaymentForm from './PaymentForm';
 
-const stripePromise = loadStripe('Dummy Key');
+const stripePromise = loadStripe('pk_test_51QePePRraaD2yavnJJ6oYegCGWIKcHQjccIgBo7jZrDTzsYcMCjU5za2emHhtsFSQj6khb7EhZOKB651luieZKYB00zYH3sdM7');
 
 const MyAppointments = () => {
   const { backendUrl, token, getDoctorsData, slotDateFormatUser } = useContext(AppContext);

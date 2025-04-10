@@ -26,6 +26,8 @@ const Dashboard = () => {
 
   const fetchEarningsData = async () => {
     try {
+
+      
       await getEarningsData(); // Fetch data and store in context
     } catch (error) {
       console.error('Error fetching earnings data:', error);
